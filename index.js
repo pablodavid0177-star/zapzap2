@@ -1,43 +1,66 @@
-const express = require("express");
-const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
+<!DOCTYPE html>
+<html>
  
-app.use(express.static(__dirname));
+<head>
+<title>ZapZap Pro</title>
  
-let users = {};
+<style>
+body{
+ font-family:Arial;
+ background:#0b141a;
+ color:white;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ height:100vh;
+}
  
-io.on("connection", (socket) => {
+.login{
+ display:flex;
+ flex-direction:column;
+ gap:10px;
+}
  
-  socket.on("joinRoom", ({ name, room }) => {
-    socket.join(room);
-    users[socket.id] = { name, room };
+input, select, button{
+ padding:10px;
+ border:none;
+ border-radius:5px;
+}
+</style>
  
-    io.to(room).emit("chat message", {
-      name: "Sistema",
-      msg: `${name} entrou na sala`,
-      room
-    });
-  });
+</head>
  
-  socket.on("chat message", (data) => {
-    io.to(data.room).emit("chat message", data);
-  });
+<body>
  
-  socket.on("disconnect", () => {
-    const user = users[socket.id];
-    if (user) {
-      io.to(user.room).emit("chat message", {
-        name: "Sistema",
-        msg: `${user.name} saiu`,
-        room: user.room
-      });
-      delete users[socket.id];
-    }
-  });
+<div class="login">
+ <h2>Entrar no ZapZap 🔥</h2>
  
-});
+ <input id="name" placeholder="Seu nome">
  
-http.listen(3000, () => {
-  console.log("Rodando em http://localhost:3000");
-});
+ <select id="room">
+   <option value="geral">Geral</option>
+   <option value="games">Games</option>
+   <option value="estudos">Estudos</option>
+ </select>
+ 
+ <button onclick="enter()">Entrar</button>
+</div>
+ 
+<script>
+function enter(){
+ const name = document.getElementById("name").value;
+ const room = document.getElementById("room").value;
+ 
+ if(!name) return alert("Digite seu nome");
+ 
+ localStorage.setItem("name", name);
+ localStorage.setItem("room", room);
+ 
+ // ✅ CORRIGIDO AQUI
+ window.location.href = "bate-papo.html";
+}
+</script>
+ 
+</body>
+</html>
+ 
